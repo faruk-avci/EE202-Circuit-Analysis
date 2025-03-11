@@ -1,0 +1,406 @@
+\documentclass{article}
+\usepackage[a4paper, left=3cm, right=3cm, top=3cm, bottom=2.7cm]{geometry}
+
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+\usepackage{float}
+\usepackage{subcaption}
+
+\usepackage{etoolbox}
+\usepackage{amsmath}
+\usepackage{circuitikz}
+\usepackage{graphicx}
+\usepackage{float}
+
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1}}{}{}
+}
+\makeatother
+
+
+\title{\includegraphics[scale=0.65]{images/ozu.png}\\
+\textbf{EE202 - Circuit Analysis}}
+\subtitle{Laboratory 2}
+\date{Fall 2022}
+%\author{Laboratory 1}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+\begin{document}
+
+\begin{titlepage}
+\begin{center}
+
+% Top 
+\includegraphics[width=0.55\textwidth]{ozu.png}~\\[2cm]
+
+% Title
+\HRule \\[0.4cm]
+{ \LARGE 
+  \textbf{Lab Report for EE202 Circuit Analysis}\\[0.4cm]
+  \emph{Laboratory 2}\\[0.4cm]
+}
+\HRule \\[1.5cm]
+
+% Author
+{ \large
+  Ömer Faruk Avcı \\[0.1cm]
+  \texttt{faruk.avci@ozu.edu.tr}
+}
+
+\vfill
+
+%\textsc{\Large Cyprus University of Technology}\\[0.4cm]
+\textsc{\large Department of Electrical and Electronics Engineering}\\[0.4cm]
+
+
+% Bottom
+{\large \today}
+ 
+\end{center}
+\end{titlepage}
+
+
+
+\newpage
+
+%\maketitle
+
+\section{Introduction}
+This lab aims to determine the current through a specific resistor and the voltage across its nodes using Thevenin’s and Norton’s theorems and superposition, based on circuit measurements under short-circuit and open-circuit conditions.
+
+\subsection{Preliminary Work}
+\subsubsection{Pre Task 1}
+To determine the Thevenin and Norton of the circuit shown in \textbf{Figure 1.}, below steps are followed:
+
+To find \( R_{eq} \):
+\begin{enumerate}
+  \item \textbf{Short the voltage source} by replacing it with a wire.
+  \item \textbf{Remove \( R_3 \)} to analyze the circuit without it.
+  \item \textbf{Find \( R_{eq} \)} by simplifying the resistor network.
+\end{enumerate}
+
+Following these steps, the circuit in \textbf{Figure 2} is obtained. In this configuration, \( R_1 \) and \( R_5 \) are in parallel, as well as \( R_2 \) and \( R_4 \). The equivalent resistance, \( R_{eq} \), is calculated as:
+
+\[
+R_{eq} = R_{(1,5)} + R_{(2,4)}
+\]
+
+where:
+
+\[
+R_{(1,5)} = \frac{R_1 R_5}{R_1 + R_5} = \frac{4.7\text{k}\Omega \times 1\text{k}\Omega}{4.7\text{k}\Omega + 1\text{k}\Omega}
+\]
+
+\[
+R_{(2,4)} = \frac{R_2 R_4}{R_2 + R_4} = \frac{3.3\text{k}\Omega \times 6.8\text{k}\Omega}{3.3\text{k}\Omega + 6.8\text{k}\Omega}
+\]
+
+Thus, the total equivalent resistance simplifies to:
+
+\[
+R_{eq} = \frac{4.7 \times 1}{4.7 + 1} \text{k}\Omega + \frac{3.3 \times 6.8}{3.3 + 6.8} \text{k}\Omega
+\]
+
+\[
+R_{eq} \approx \frac{4.7}{5.7} \text{k}\Omega + \frac{22.44}{10.1} \text{k}\Omega
+\]
+
+\[
+R_{eq} \approx 0.824\text{k}\Omega + 2.22\text{k}\Omega
+\]
+
+\[
+R_{eq} \approx 3.04\text{k}\Omega
+\]
+
+
+\begin{figure}[h]
+  \centering
+  \begin{minipage}{0.48\textwidth}
+      \centering
+      \begin{circuitikz}
+          \draw (0,6) to[battery, l=10V] (0,0);
+          \draw (0,6) to[short] (3,6);
+          \draw (3,6) to[R, l=$R_1$,a=$4.7\text{k}\Omega$] (3,3);
+          \draw (3,6) to[short] (6,6) to[R, l=$R_2$,a=$3.3\text{k}\Omega$] (6,3);
+          \draw (3,3) to[R, l=$R_3$,a=$2.2\text{k}\Omega$] (6,3);
+          \draw (3,3) to[R, l=$R_5$,a=$1\text{k}\Omega$] (3,0);
+          \draw (6,3) to[R, l=$R_4$,a=$6.8\text{k}\Omega$] (6,0);
+          \draw (0,0) to[short] (6,0);
+          \fill (3,3) circle (3pt);  
+          \node[above] at (2.8,3) {\textbf{A}};
+          \fill (6,3) circle (3pt); 
+          \node[above] at (6.2,3) {\textbf{B}};
+      \end{circuitikz}
+      \caption{Original Circuit Diagram}
+      \label{fig:original_circuit}
+  \end{minipage}
+  \hfill
+  % Second Circuit (Thevenin Equivalent)
+  \begin{minipage}{0.48\textwidth}
+      \centering
+      \begin{circuitikz}
+          \draw (0,6) to[short] (0,0);
+          \draw (0,6) to[short] (3,6);
+          \draw (3,6) to[R, l=$R_1$,a=$4.7\text{k}\Omega$] (3,3);
+          \draw (3,6) to[short] (6,6) to[R, l=$R_2$,a=$3.3\text{k}\Omega$] (6,3);
+          \draw (3,3) to[R, l=$R_5$,a=$1\text{k}\Omega$] (3,0);
+          \draw (6,3) to[R, l=$R_4$,a=$6.8\text{k}\Omega$] (6,0);
+          \draw (0,0) to[short] (6,0);
+          \fill (3,3) circle (3pt);  
+          \node[above] at (2.8,3) {\textbf{A}};
+          \fill (6,3) circle (3pt); 
+          \node[above] at (6.2,3) {\textbf{B}};
+      \end{circuitikz}
+      \caption{Circuit for Finding $R_{eq}$}
+      \label{fig:thevenin_circuit}
+  \end{minipage}
+\end{figure}
+
+
+
+
+\newpage
+
+To determine the voltage across nodes \( A \) and \( B \) (\( V_A - V_B \)), \textbf{the voltage divider rule} is applied:
+
+\[
+V_A = V_{\text{source}} \times \frac{R_5}{R_1 + R_5}
+\]
+
+\[
+V_B = V_{\text{source}} \times \frac{R_4}{R_2 + R_4}
+\]
+
+Substituting the given values:
+
+\[
+V_A = 10V \times \frac{1\text{k}\Omega}{4.7\text{k}\Omega + 1\text{k}\Omega}
+\]
+
+\[
+V_B = 10V \times \frac{6.8\text{k}\Omega}{3.3\text{k}\Omega + 6.8\text{k}\Omega}
+\]
+
+Solving for each:
+
+\[
+V_A = 10V \times \frac{1}{5.7} = 10V \times 0.175 = 1.75V
+\]
+
+\[
+V_B = 10V \times \frac{6.8}{10.1} = 10V \times 0.673 = 6.73V
+\]
+
+Finally, the voltage difference across nodes \( A \) and \( B \) is:
+
+\[
+V_{AB} = V_A - V_B = 1.75V - 6.73V = -4.98V
+\]
+
+Since the result is negative, it means that node B is at a higher potential than node A.
+
+\[
+|V_{th}| = 4.98V
+\]
+
+The Norton current is given by:
+
+\[
+I_N = \frac{V_{th}}{R_{th}} = \frac{4.98V}{3.04k\Omega}
+\]
+
+\[
+I_N = \frac{4.98}{3040} A \approx 1.64 mA
+\]
+
+\begin{figure}[h]
+  \centering
+  \begin{minipage}{0.48\textwidth}
+      \centering
+      \begin{circuitikz}
+          % Thevenin Equivalent Circuit
+          \draw (0,4) to[battery,a=$V{th}$, l=4.98V] (0,0);
+          \draw (0,4) to[R, l=$R_{th}$, a=$3.04\text{k}\Omega$] (5,4) 
+          to[short] (6,4);
+          \draw (4.5,0) to[short] (0,0);
+          \draw (4.5,0) to[short] (6,0);
+          
+          % Marking Nodes
+          \fill (6,4) circle (3pt);  
+          \node[above] at (6.2,4) {\textbf{A}};
+          \fill (6,0) circle (3pt); 
+          \node[above] at (6.2,0) {\textbf{B}};
+      \end{circuitikz}
+      \caption{Thevenin Equivalent Circuit}
+      \label{fig:thevenin_equiv}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+      \centering
+      \begin{circuitikz}
+          % Norton Equivalent Circuit with Upward Current Source
+          \draw (0,0) to[isource, l=$I_N$, a=$1.64mA$] (0,4);
+          \draw (0,4) to[short] (5,4) 
+          to[short] (6,4);
+          \draw (4.5,4) to[R, l=$R_{N}$, a=$3.04\text{k}\Omega$] (4.5,0)
+          to[short] (0,0);
+          \draw (4.5,0) to[short] (6,0);
+          
+          % Marking Nodes
+          \fill (6,4) circle (3pt);  
+          \node[above] at (6.2,4) {\textbf{A}};
+          \fill (6,0) circle (3pt); 
+          \node[above] at (6.2,0) {\textbf{B}};
+      \end{circuitikz}
+      \caption{Norton Equivalent Circuit}
+      \label{fig:norton_equiv}
+  \end{minipage}
+\end{figure}
+
+\newpage
+
+\subsubsection{Pre Task 2}
+
+
+To determine the current through resistor \( R_4 \) in \textbf{Figure 5}, the Superposition Theorem is applied by considering each independent source separately. The steps are as follows:
+\begin{itemize}
+  \item \textbf{Step 1: Considering 10V only}
+  
+  When the 5V source is turned off by replacing it with a short circuit, the circuit simplifies as shown in \textbf{Figure 6}.
+
+  Since \( R_1 \) is in parallel with the entire circuit, it does not affect the current through \( R_4 \). The circuit simplifies to \( R_4 \) and \( R_2 \) in parallel, in series with \( R_3 \).
+
+\textbf{Find Parallel Resistance \( R_p \)}
+
+\[
+R_p = \frac{R_4 R_2}{R_4 + R_2} = \frac{(4.7k\Omega)(2.2k\Omega)}{4.7k\Omega + 2.2k\Omega} = 1.5k\Omega
+\]
+
+\textbf{Find Total Resistance}
+
+\[
+R_{\text{total}} = R_p + R_3 = 1.5k\Omega + 10k\Omega = 11.5k\Omega
+\]
+
+\textbf{Find Total Current}
+
+\[
+I_{\text{total}} = \frac{V}{R_{\text{total}}} = \frac{10V}{11.5k\Omega} = 0.870mA
+\]
+
+\textbf{Use Current Division to Find \( I_4 \)}
+
+\[
+I_4 = I_{\text{total}} \times \frac{R_2}{R_4 + R_2} = 0.870mA \times \frac{2.2}{6.9} = 0.278mA
+\]
+
+Thus, the current through \( R_4 \) is:
+
+\[
+I_4 = 0.278 \text{ mA}
+\]
+
+\item \textbf{Step 2: Considering 5V only}
+
+When the 10V source is turned off by replacing it with a short circuit, the circuit simplifies as shown in \textbf{Figure 7}.
+
+Note that the only differences between the circuits in \textbf{Figure 6} and \textbf{Figure 7} are the battery voltage and its polarity. As a result, the current through \( R_4 \) in the second case is given by:
+
+\[
+I_4^{(5V)} = -\frac{I_4^{(10V)}}{2}
+\]
+
+Substituting \( I_4^{(10V)} = 0.278 \text{ mA} \):
+
+\[
+I_4^{(5V)} = -\frac{0.278}{2} \text{ mA} = -0.139 \text{ mA}
+\]
+
+Thus, the total current through \( R_4 \) using superposition is:
+
+\[
+I_4 = I_4^{(10V)} + I_4^{(5V)} = 0.278 \text{ mA} - 0.139 \text{ mA} = 0.139 \text{ mA}
+\]
+\end{itemize}
+\begin{figure}[H] 
+  \centering
+
+  \begin{minipage}{\textwidth}
+      \centering
+      \resizebox{0.8\textwidth}{!}{ % Resize circuit to 80% width
+      \begin{circuitikz}
+          \draw (0,5) to[battery,a=$V{1}$, l=5V] (0,0);
+          \draw (0,5) to[R, l=$R_2$,a=$2.2\text{k}\Omega$] (5,5);
+          \draw (5,5) to[R, l=$R_3$,a=$10\text{k}\Omega$] (10,5);
+          \draw (5,5) to[R, l=$R_4$,a=$4.7\text{k}\Omega$] (5,0);
+          \draw (0,5) to[short] (0,7) 
+          to[R, l=$R_1$,a=$6.8\text{k}\Omega$] (10,7)
+          to[short] (10,5);
+          \draw (10,0) to[battery,a=$V{2}$, l=10V] (10,5);
+          \draw (10,0) to[short] (0,0);
+      \end{circuitikz}
+      }
+      \caption{Original Circuit}
+      \label{fig:original_circuit}
+  \end{minipage}
+  
+  \vspace{1cm} % Adds space between the top circuit and side-by-side circuits
+
+  % Side-by-side circuits
+  \begin{minipage}{0.495\textwidth} % Reduce width for better spacing
+      \centering
+      \resizebox{1.0\textwidth}{!}{ % Resize smaller circuits
+      \begin{circuitikz}
+          \draw (0,0) to[battery,a=$V{2}$, l=10V] (8,0);
+          \draw (0,0) to[short] (0,3) to[short] (1,3);
+          \draw (1,3) to[short] (1,4) to[R, l=$R_4$,a=$4.7\text{k}\Omega$] (4,4) to[short] (4,3);
+          \draw (1,3) to[short] (1,2) to[R, l=$R_2$,a=$2.2\text{k}\Omega$] (4,2) to[short] (4,3);
+          \draw (4,3) to[R, l=$R_3$,a=$10\text{k}\Omega$] (8,3) to[short] (8,0);
+          \draw (0,3) to[short] (0,6) to[R, l=$R_1$,a=$6.8\text{k}\Omega$] (8,6) to[short] (8,3);
+      \end{circuitikz}
+      }
+      \caption{Circuit with Only 10V Source}
+      \label{fig:only_10V}
+  \end{minipage}
+  \begin{minipage}{0.495\textwidth} % Reduce width for better spacing
+      \centering
+      \resizebox{1.0\textwidth}{!}{ % Resize smaller circuits
+      \begin{circuitikz}
+          \draw (8,0) to[battery,a=$V{1}$, l=5V] (0,0);
+          \draw (0,0) to[short] (0,3) to[short] (1,3);
+          \draw (1,3) to[short] (1,4) to[R, l=$R_4$,a=$4.7\text{k}\Omega$] (4,4) to[short] (4,3);
+          \draw (1,3) to[short] (1,2) to[R, l=$R_2$,a=$2.2\text{k}\Omega$] (4,2) to[short] (4,3);
+          \draw (4,3) to[R, l=$R_3$,a=$10\text{k}\Omega$] (8,3) to[short] (8,0);
+          \draw (0,3) to[short] (0,6) to[R, l=$R_1$,a=$6.8\text{k}\Omega$] (8,6) to[short] (8,3);
+      \end{circuitikz}
+      }
+      \caption{Circuit with Only 5V Source}
+      \label{fig:only_5V}
+  \end{minipage}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
